@@ -405,7 +405,10 @@ for file in "${split_profiles[@]}"; do
 done
 
 for file in "${standalone_split_profiles[@]}"; do
-    expect_toml "$file" split_central_sleep_timeout_seconds 120
+    # Personal K:03 build: keep the keyboard awake for one hour.
+    expected=120
+    [[ "$file" == "keyboards/k03/keyboard.toml" ]] && expected=3600
+    expect_toml "$file" split_central_sleep_timeout_seconds "$expected"
 done
 
 for file in "${qube_profiles[@]}"; do
@@ -741,9 +744,9 @@ host_power_module=keyboards/common/ble_host_power.rs
 rg -Fq 'BleHostPowerConfig::new(' "$host_power_module" \
     || fail "$host_power_module: shared host BLE power policy is missing"
 rg -Fq 'SPLIT_CENTRAL_SLEEP_TIMEOUT_SECONDS' "$host_power_module" \
-    || fail "$host_power_module: host idle deadline must follow the standalone 120-second sleep contract"
-rg -Fq 'const HOST_DISCONNECT_TIMEOUT_SECONDS: u64 = 30 * 60;' "$host_power_module" \
-    || fail "$host_power_module: host disconnect policy must remain fixed at 30 minutes"
+    || fail "$host_power_module: host idle deadline must follow the configured standalone sleep timeout"
+rg -Fq 'const HOST_DISCONNECT_TIMEOUT_SECONDS: u64 = 60 * 60;' "$host_power_module" \
+    || fail "$host_power_module: host disconnect policy must remain fixed at 60 minutes"
 
 standalone_central_roots=(
     keyboards/imperial44/src/central.rs
