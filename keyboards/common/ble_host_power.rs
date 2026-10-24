@@ -2,7 +2,7 @@
 
 use rmk::config::BleHostPowerConfig;
 
-const HOST_DISCONNECT_TIMEOUT_SECONDS: u64 = 30 * 60;
+const HOST_DISCONNECT_TIMEOUT_SECONDS: u64 = 60 * 60;
 
 pub(crate) fn ble_host_power_config() -> BleHostPowerConfig {
     BleHostPowerConfig::new(
